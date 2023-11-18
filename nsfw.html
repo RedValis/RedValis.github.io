@@ -3,25 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Screen Experience</title>
+    <title>NSFW</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 15px;
+            cursor: pointer;
+        }
+
+        #fullscreenContent {
+            display: none;
         }
 
         img {
             width: 100vw;
             height: 100vh;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
 
+    <button id="startButton">Click me for a good time</button>
+
+    <div id="fullscreenContent">
+        <img src="luigi.gif" alt="Full Screen GIF"> 
+    </div>
+
     <script>
-        const audio = new Audio('scream.mp3'); 
+        const audio = new Audio('scream.mp3');
         audio.loop = true;
-        audio.play();
+
+        const startButton = document.getElementById('startButton');
+        const fullscreenContent = document.getElementById('fullscreenContent');
+
+        startButton.addEventListener('click', () => {
+            audio.play();
+            fullscreenContent.style.display = 'block';
+            document.documentElement.requestFullscreen(); // Request full screen
+        });
 
         window.addEventListener('beforeunload', function (e) {
             const confirmationMessage = 'Are you sure you want to leave?';
@@ -30,7 +60,6 @@
         });
 
     </script>
-    <img src="luigi.gif" alt="Full Screen Gif">
 
 </body>
 </html>
