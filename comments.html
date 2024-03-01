@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Comment Box</title>
+    <style>
+        /* Styles for comments */
+        .comment {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .comment h3 {
+            margin: 0;
+        }
+
+        .comment .username {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Style for the comment form and username input */
+        #comment-form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comments</h1>
+
+    <div id="comments">
+        <!-- Existing comments will be displayed here -->
+    </div>
+
+    <div id="comment-form">
+        <h2>Add a Comment</h2>
+        <form id="add-comment-form">
+            <label for="username">Your Username:</label>
+            <input type="text" id="username" required>
+            <label for="comment">Your Comment:</label>
+            <textarea id="comment" rows="4" required></textarea>
+            <button type="submit">Post Comment</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to add a new comment
+        function addComment() {
+            const username = document.getElementById('username').value;
+            const commentText = document.getElementById('comment').value;
+
+            if (username && commentText) {
+                // Create a new comment object
+                const comment = { username, commentText };
+
+                // Get the existing comments from localStorage or initialize an empty array
+                let comments = JSON.parse(localStorage.getItem('comments')) || [];
+
+                // Add the new comment to the array
+                comments.push(comment);
+
+                // Save the updated comments to localStorage
+                localStorage.setItem('comments', JSON.stringify(comments));
+
+                // Clear the form
+                document.getElementById('username').value = '';
+                document.getElementById('comment').value = '';
+
+                // Display the comments
+                displayComments();
+            }
+        }
+
+        // Function to display comments
+        function displayComments() {
+            const commentsContainer = document.getElementById('comments');
+            commentsContainer.innerHTML = '';
+
+            // Get the comments from localStorage
+            const comments = JSON.parse(localStorage.getItem('comments')) || [];
+
+            comments.forEach((comment, index) => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment';
+                commentDiv.innerHTML = `<div class="username">${comment.username}</div><p>${comment.commentText}</p>`;
+
+                commentsContainer.appendChild(commentDiv);
+            });
+        }
+
+        // Event listener for the comment form
+        document.getElementById('add-comment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            addComment();
+        });
+
+        // Initial display of comments
+        displayComments();
+    </script>
+</body>
+</html>

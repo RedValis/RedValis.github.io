@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSFW</title>
+    <meta name="description" content="Go on, check it out for a good time, ( ͡° ͜ʖ ͡°)">
+    <meta name="twitter:image:src" content="https://images.unsplash.com/photo-1598357498749-70122f59d793?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2lybHMlMjBraXNzaW5nfGVufDB8fDB8fHww">
+    <meta name="twitter:image:src" content="https://images.unsplash.com/photo-1598357498749-70122f59d793?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2lybHMlMjBraXNzaW5nfGVufDB8fDB8fHww">
+    <meta name="twitter:site" content="@HelcialHelios">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NSFW - Only click if 18+">
+    <meta name="twitter:description" content="Go on, check it out for a good time, ( ͡° ͜ʖ ͡°)">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1598357498749-70122f59d793?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2lybHMlMjBraXNzaW5nfGVufDB8fDB8fHww">
+    <meta property="og:image:alt" content="Go on, check it out for a good time, ( ͡° ͜ʖ ͡°)">
+    <meta property="og:image:width" content="500">
+    <meta property="og:image:height" content="400">
+    <meta property="og:site_name" content="redvalis">
+    <meta property="og:type" content="object">
+    <meta property="og:title" content="NSFW - Only click if 18+">
+    <meta property="og:url" content="https://redvalis.github.io/NSFW">
+    <meta property="og:description" content="Go on, check it out for a good time, ( ͡° ͜ʖ ͡°)">
+    <meta name="expected-hostname" content="https://redvalis.github.io/NSFW">
+    <meta name="theme-color" content="#8a2be2">    
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 15px;
+            cursor: pointer;
+        }
+
+        #fullscreenContent {
+            display: none;
+        }
+
+        img {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="startButton">Click me for a good time</button>
+
+    <div id="fullscreenContent">
+        <img src="luigi.gif" alt="Full Screen GIF"> 
+    </div>
+
+    <script>
+        const audio = new Audio('scream.mp3');
+        audio.loop = true;
+
+        const startButton = document.getElementById('startButton');
+        const fullscreenContent = document.getElementById('fullscreenContent');
+
+        startButton.addEventListener('click', () => {
+            audio.play();
+            fullscreenContent.style.display = 'block';
+            document.documentElement.requestFullscreen(); // Request full screen
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            const confirmationMessage = 'Are you sure you want to leave?';
+            e.returnValue = confirmationMessage;
+            return confirmationMessage;
+        });
+
+    </script>
+
+</body>
+</html>
