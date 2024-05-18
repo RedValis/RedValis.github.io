@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Duck</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0; /* Initial background color */
+        }
+        img {
+            cursor: pointer;
+            max-width: 90%;
+            max-height: 90%;
+        }
+    </style>
+</head>
+<body>
+    <img id="duckImage" src="https://random-d.uk/api/213.jpg" alt="Random Duck" onclick="changeDuck()">
+    
+    <script>
+        let duckUrls = [];
+
+        // Fetch the duck URLs from the text file
+        fetch('duckpics.txt')
+            .then(response => response.text())
+            .then(data => {
+                duckUrls = data.split('\n').filter(url => url.trim() !== '');
+            });
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function changeDuck() {
+            if (duckUrls.length > 0) {
+                const randomIndex = Math.floor(Math.random() * duckUrls.length);
+                document.getElementById('duckImage').src = duckUrls[randomIndex];
+                document.body.style.backgroundColor = getRandomColor();
+            } else {
+                console.error('No duck URLs available');
+            }
+        }
+
+        // Initialize with the first duck image and random background color
+        document.addEventListener('DOMContentLoaded', (event) => {
+            changeDuck();
+        });
+    </script>
+</body>
+</html>
