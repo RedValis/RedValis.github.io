@@ -34,8 +34,12 @@
         .carousel-item img {
             max-height: 500px;
             margin: auto;
-        }s
-
+            opacity: 1; /* Add this */
+            transition: opacity 0.5s; /* Add this */
+        }
+        .carousel-item.loading img { /* Add this */
+            opacity: 0.5;
+        }
         .placeholder {
             position: absolute;
             top: 0;
@@ -70,7 +74,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script>
         let catUrls = [];
-
+    
         // Fetch the cat URLs from the text file
         fetch('Media-DB/cat_pics.txt')
             .then(response => response.text())
@@ -78,7 +82,7 @@
                 catUrls = data.split('\n').filter(url => url.trim() !== '');
                 populateCarousel();
             });
-
+    
         function populateCarousel() {
             const carouselInner = document.getElementById('carousel-inner');
             const randomUrls = getRandomUrls(100);
@@ -92,21 +96,24 @@
                 img.src = url;
                 img.classList.add('d-block', 'w-100');
                 img.onload = function() {
+                    item.classList.remove('loading'); // Remove loading class when image is loaded
                     placeholder.style.display = 'none';
                 };
                 img.onerror = function() {
                     placeholder.innerHTML = '<p style="color: white;">Failed to load image</p>';
                 };
                 item.appendChild(img);
-
+    
                 const placeholder = document.createElement('div');
                 placeholder.classList.add('placeholder');
                 placeholder.innerHTML = '<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-dasharray="31.41592653589793" stroke-dashoffset="31.41592653589793"><animate attributeName="stroke-dashoffset" repeatCount="indefinite" dur="1s" keyTimes="0;0.5;1" values="0;31.41592653589793;0"></animate></circle></svg>';
                 item.appendChild(placeholder);
                 carouselInner.appendChild(item);
+    
+                item.classList.add('loading'); // Add loading class when image starts loading
             });
         }
-
+    
         function getRandomUrls(n) {
             const randomUrls = [];
             for (let i = 0; i < n; i++) {
