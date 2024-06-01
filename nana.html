@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spotify Player</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="A little stereo for your favorite songs :D">
+    <meta name="twitter:image:src" content="https://cdn.discordapp.com/attachments/1125826125277429875/1246549865484521504/e18c29b1b9dc8a4e4b9dd04245c7a7bc.jpg?ex=665ccb87&is=665b7a07&hm=7f72c186de741e078fd46e01b5feb21545d0fde83f8e2ac6e72e8c4e507c5e5f&">
+    <meta name="twitter:site" content="@HelcialHelios">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Music">
+    <meta name="twitter:description" content="A little stereo for your favorite songs :D">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/1125826125277429875/1246549865484521504/e18c29b1b9dc8a4e4b9dd04245c7a7bc.jpg?ex=665ccb87&is=665b7a07&hm=7f72c186de741e078fd46e01b5feb21545d0fde83f8e2ac6e72e8c4e507c5e5f&">
+    <meta property="og:image:alt" content="A little stereo for your favorite songs :D">
+    <meta property="og:image:width" content="736">
+    <meta property="og:image:height" content="935">
+    <meta property="og:site_name" content="Doofah.mp3 player :)">
+    <meta property="og:type" content="object">
+    <meta property="og:title" content="Music">
+    <meta property="og:url" content="https://redvalis.github.io/nana/">
+    <meta property="og:description" content="A little stereo for your favorite songs :D">
+    <meta name="expected-hostname" content="https://redvalis.github.io/nana/">
+    <meta name="theme-color" content="#0e6578">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #C2E59C, #64B678);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+        }
+
+        .player {
+            position: relative;
+            text-align: center;
+        }
+
+        .song-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        .song-name-container {
+            position: relative;
+            width: 200px;
+            height: 40px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .song-name {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .control {
+            background-color: #FFFFFF;
+            border: none;
+            border-radius: 50%;
+            padding: 20px;
+            cursor: pointer;
+            margin: 0 15px;
+            transition: background-color 0.3s;
+            width: 50px;
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: small;
+        }
+
+        .control:hover {
+            background-color: #1DB954;
+        }
+
+        /* Slider */
+        .slider-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 5px;
+            border-radius: 5px;
+            background: #FFFFFF;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #1DB954;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #1DB954;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="player">
+        <img class="song-image" src="" alt="Song Image">
+        <div class="song-name-container">
+            <div class="song-name"></div>
+        </div>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="0" class="slider" id="seekSlider">
+        </div>
+        <br>
+        <button class="control" id="prev">❰</button>
+        <button class="control" id="playPause">►</button>
+        <button class="control" id="next">❱</button>
+    </div>
+
+    <!-- Audio element -->
+    <audio id="audioPlayer" src="" type="audio/mp3"></audio>
+
+    <script>
+        // Sample song names, corresponding audio file paths, and image URLs
+        const songs = [
+            { name: "Moon TouRRRR", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516983848108103/Moon_Tour.mp3?ex=665cace8&is=665b5b68&hm=b1d9745e87dbe85907b36cae646f49437703bffa88724b175f53d2da5a5abe66&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517105398906901/ab67616d0000b2736b6962e774af860e8ad4dee0.jpg?ex=665cad05&is=665b5b85&hm=96a8f3ba31dc9ce9cfb438b51378ffaa8de2dfc9ffb9b2ff4bad25daf7baa39c&" },
+            { name: "icantfeelanything", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516983562899598/icantfeelanything.mp3?ex=665cace8&is=665b5b68&hm=28d555f2cb871ee66afdd03c73b4fc0aa8df7d40837fb065a3ad678d24f2b901&", image: "https://media.discordapp.net/attachments/1149735003933122670/1246517174873358427/ab67616d0000b273d005a1842f60a0242ee43be7.jpg?ex=665cad15&is=665b5b95&hm=258f6922c79a5a3314ab3bd08be95bb17ec288f4cd5a7194f18ee011bc82805d&=&format=webp&width=413&height=413" },
+            { name: "Broken Melodies", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516985148342333/Broken_Melodies.mp3?ex=665cace8&is=665b5b68&hm=e70874d52268b83e3daa2fd712faa340ec992debdb5c4a0c8ffb48fd485b5f8b&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517276463861902/ab67616d0000b273a1ee973dde5ec47914ebc0e1.jpg?ex=665cad2d&is=665b5bad&hm=e96a47b9d9e3fc7830f2e3aaca356e559075fa913ffefad75420fb492bde9196&" },
+            { name: "Good Person", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516983290396726/Good_Person.mp3?ex=665cace7&is=665b5b67&hm=c7b1bc60cfebc0a996a63b5715cf318077eab8de4d86859b71d999d66fa8a89a&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517351105691750/ab67616d0000b2730460b6fe459e986ca5310c40.jpg?ex=665cad3f&is=665b5bbf&hm=cfdac710deea2421f7135ae7591bd65b43a99d68eb4c534e6e8af4aa3d6332fb&" },
+            { name: "Carat Cake", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516985806852158/Carat_Cake.mp3?ex=665cace8&is=665b5b68&hm=d4fe156136147c82f74cec3a463753fb1244789327cb56e118cf5f9ff1f72dac&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517174873358427/ab67616d0000b273d005a1842f60a0242ee43be7.jpg?ex=665cad15&is=665b5b95&hm=258f6922c79a5a3314ab3bd08be95bb17ec288f4cd5a7194f18ee011bc82805d&" },
+            { name: "Candy", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516985450201130/Candy.mp3?ex=665cace8&is=665b5b68&hm=7933af2843227893f4b3a5de5e6a979770db48366eef321a1c891bcd9be3a04a&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517404159442964/ab67616d0000b27358a75e46b114389a2fe762f6.jpg?ex=665cad4c&is=665b5bcc&hm=4225e567cf04c1c999b4f87b6e81cac6f71cb0084cd17d2f1304f7419d03c938&" },
+            { name: "Drippin'", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516982996537344/Drippin.mp3?ex=665cace7&is=665b5b67&hm=6c2ec66c3f364d461f6b3ee171213d12a5727c082ea545cf7cb3cad2e0d2d185&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517459721257020/ab67616d0000b273182f42112113f08871e71c53.jpg?ex=665cad59&is=665b5bd9&hm=0e9dcea487bc8b88d1eb5fd723e1e91a4f9dea3340b7b641123fbf5c7322d148&" },
+            { name: "Simon Says", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516984875716608/Simon_Says.mp3?ex=665cace8&is=665b5b68&hm=3234482078117f17b0c710cb7047ecd0d7de1e8cc7a58bca7a3c2e40e6ede873&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517754157334558/ab67616d0000b2734931057cec0d2e85751f8e48.png?ex=665cad9f&is=665b5c1f&hm=afc36b5bcdafb57d19098cd361e3f7a8bee5f1116a43c58d363f699c4bfc3acc&" },
+            { name: "Punch", path: "https://cdn.discordapp.com/attachments/1149735003933122670/1246516984477384857/Punch.mp3?ex=665cace8&is=665b5b68&hm=dc60b43e6b74314e3e65af15c0e4e704ade259e7d6bf0cd9553a8fe965b40c39&", image: "https://cdn.discordapp.com/attachments/1149735003933122670/1246517763422289972/ab67616d0000b27396522fe759dfe7ccf78db990.png?ex=665cada1&is=665b5c21&hm=9fbf415dd5881660e70074a8363e8ed9066a43482e817f0d5e350698900d1569&" },
+            { name: "Golden Hour (Gordon got cooked ngl)", path: "https://cdn.discordapp.com/attachments/1125826125277429875/1246522514436395140/Golden_Hour.mp3?ex=665cb20e&is=665b608e&hm=06b4670100199265c8c5e6532a3e781ed8906602e2f03abb95e9a1588a56ca7e&", image: "https://cdn.discordapp.com/attachments/1125826125277429875/1246521476543152148/ab67616d0000b273957d63a17c008c8a7c499f4d.jpg?ex=665cb117&is=665b5f97&hm=3381181c6cb32741e1771ee0db28685393e46fb5250023e7f7c096c78196c0c2&" }
+        ];
+
+        let currentSongIndex = 0;
+        let isPaused = true;
+        let playbackTimes = {}; // Store playback time for each song
+
+        // Function to update song name and image
+        function updateSongInfo() {
+            const songName = document.querySelector('.song-name');
+            const songImage = document.querySelector('.song-image');
+            songName.textContent = songs[currentSongIndex].name;
+            songImage.src = songs[currentSongIndex].image;
+        }
+
+        // Toggle play/pause button icon
+        function togglePlayPauseIcon() {
+            const playPauseButton = document.getElementById('playPause');
+            playPauseButton.textContent = isPaused ? '►' : '||';
+        }
+
+        // Function to play or pause the audio
+        function togglePlayPauseAudio() {
+            const audio = document.getElementById('audioPlayer');
+            if (audio.paused) {
+                if (playbackTimes[currentSongIndex] !== undefined) {
+                    audio.currentTime = playbackTimes[currentSongIndex];
+                }
+                audio.src = songs[currentSongIndex].path;
+                audio.play();
+            } else {
+                playbackTimes[currentSongIndex] = audio.currentTime;
+                audio.pause();
+            }
+        }
+
+        // Update the slider value based on audio progress
+        function updateSlider() {
+            const audio = document.getElementById('audioPlayer');
+            const seekSlider = document.getElementById('seekSlider');
+            seekSlider.value = (audio.currentTime / audio.duration) * 100;
+        }
+
+        // Update audio progress when slider value changes
+        function updateAudioProgress() {
+            const audio = document.getElementById('audioPlayer');
+            const seekSlider = document.getElementById('seekSlider');
+            audio.currentTime = (seekSlider.value * audio.duration) / 100;
+        }
+
+        // Button event listeners
+       
+        // Button event listeners
+        document.getElementById('prev').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            updateSongInfo();
+        });
+
+        document.getElementById('next').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            updateSongInfo();
+        });
+
+        document.getElementById('playPause').addEventListener('click', () => {
+            isPaused = !isPaused;
+            togglePlayPauseIcon();
+            togglePlayPauseAudio();
+        });
+
+        // Audio event listeners
+        document.getElementById('audioPlayer').addEventListener('timeupdate', () => {
+            updateSlider();
+        });
+
+        document.getElementById('seekSlider').addEventListener('input', () => {
+            updateAudioProgress();
+        });
+
+        // Update initial song name and image
+        updateSongInfo();
+    </script>
+</body>
+</html>
