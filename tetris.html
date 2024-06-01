@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Tetralis</title>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
 <meta name="description" content="Prototype tetris code that I edited, snippets from github :D">
@@ -22,7 +21,6 @@
 <meta property="og:description" content="Prototype tetris code that I edited, snippets from github :D">
 <meta name="expected-hostname" content="https://redvalis.github.io/tetris">
 <meta name="theme-color" content="#8a2be2">
-
 <style>
 html, body {
     height: 100%;
@@ -62,34 +60,34 @@ canvas {
 }
 </style>
 </head>
-
 <body>
-
 <div id="sidebar">
     <h2>Controls</h2>
-    <p>Move Left: <span id="leftKey">Left Arrow</span></p>
-    <p>Move Right: <span id="rightKey">Right Arrow</span></p>
-    <p>Drop: <span id="downKey">Down Arrow</span></p>
-    <p>Rotate Clockwise: <span id="rotateClockwiseKey">Up Arrow</span></p>
-    <p>Rotate Counterclockwise: <span id="rotateCounterClockwiseKey">Z</span></p>
+    <p>Move Left: <span id="leftKey">A</span></p>
+    <p>Move Right: <span id="rightKey">D</span></p>
+    <p>Drop: <span id="downKey">S</span></p>
+    <p>Rotate Clockwise: <span id="rotateClockwiseKey">Right Arrow</span></p>
+    <p>Rotate Counterclockwise: <span id="rotateCounterClockwiseKey">Left Arrow</span></p>
+    <p>Rotate 180: <span id="rotate180Key">Up Arrow</span></p>
     <button onclick="remapControl('left')">Remap Left</button>
     <button onclick="remapControl('right')">Remap Right</button>
     <button onclick="remapControl('down')">Remap Down</button>
     <button onclick="remapControl('rotateClockwise')">Remap Clockwise</button>
     <button onclick="remapControl('rotateCounterClockwise')">Remap Counterclockwise</button>
+    <button onclick="remapControl('rotate180')">Remap 180</button>
 </div>
-
 <canvas width="320" height="640" id="game"></canvas>
 <script>
 // JavaScript code from the original provided code and the following new additions for remapping and saving controls
 // Initialize default controls and load saved controls from local storage
 
 let controls = {
-    left: 'ArrowLeft',
-    right: 'ArrowRight',
-    down: 'ArrowDown',
-    rotateClockwise: 'ArrowUp',
-    rotateCounterClockwise: 'KeyZ'
+    left: 'a',
+    right: 'd',
+    down: 's',
+    rotateClockwise: 'ArrowRight',
+    rotateCounterClockwise: 'ArrowLeft',
+    rotate180: 'ArrowUp'
 };
 
 // Load controls from local storage if available
@@ -105,16 +103,19 @@ function displayControls() {
     document.getElementById('downKey').innerText = getKeyName(controls.down);
     document.getElementById('rotateClockwiseKey').innerText = getKeyName(controls.rotateClockwise);
     document.getElementById('rotateCounterClockwiseKey').innerText = getKeyName(controls.rotateCounterClockwise);
+    document.getElementById('rotate180Key').innerText = getKeyName(controls.rotate180);
 }
 
 // Get display-friendly key name
 function getKeyName(key) {
     const keyNames = {
+        'a': 'A',
+        'd': 'D',
+        's': 'S',
         'ArrowLeft': 'Left Arrow',
         'ArrowRight': 'Right Arrow',
         'ArrowDown': 'Down Arrow',
-        'ArrowUp': 'Up Arrow',
-        'KeyZ': 'Z'
+        'ArrowUp': 'Up Arrow'
     };
     return keyNames[key] || key;
 }
@@ -198,6 +199,16 @@ function rotateCounterClockwise(matrix) {
   const N = matrix.length - 1;
   const result = matrix.map((row, i) =>
     row.map((val, j) => matrix[j][N - i])
+  );
+
+  return result;
+}
+
+// rotate an NxN matrix 180deg
+function rotate180(matrix) {
+  const N = matrix.length - 1;
+  const result = matrix.map((row, i) =>
+    row.map((val, j) => matrix[N - i][N - j])
   );
 
   return result;
@@ -413,7 +424,15 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // up arrow key (rotate clockwise)
+  // up arrow key (rotate 180 degrees)
+  if (e.key === controls.rotate180) {
+    const matrix = rotate180(tetromino.matrix);
+    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+      tetromino.matrix = matrix;
+    }
+  }
+
+  // right arrow key (rotate clockwise)
   if (e.key === controls.rotateClockwise) {
     const matrix = rotateClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
@@ -421,7 +440,7 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // z key (rotate counterclockwise)
+  // left arrow key (rotate counterclockwise)
   if (e.key === controls.rotateCounterClockwise) {
     const matrix = rotateCounterClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
