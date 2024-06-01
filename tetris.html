@@ -4,10 +4,8 @@
 <title>Tetralis</title>
 
 <meta charset="UTF-8">
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <meta name="description" content="Prototype tetris code that I edited, snippets from github :D">
-<meta name="twitter:image:src" content="https://media.discordapp.net/attachments/1125831193296916510/1151506513395982347/Tetris-Games_Page_Hero-Tile.png">
 <meta name="twitter:image:src" content="https://media.discordapp.net/attachments/1125831193296916510/1151506513395982347/Tetris-Games_Page_Hero-Tile.png">
 <meta name="twitter:site" content="@HelcialHelios">
 <meta name="twitter:card" content="summary_large_image">
@@ -44,21 +42,103 @@ canvas {
     border: 1px solid white;
 }
 
+#sidebar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#sidebar h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+#sidebar p {
+    font-size: 14px;
+    margin: 5px 0;
+}
 </style>
 </head>
 
 <body>
 
-<p style="text-align:left"> Left arrow - move left<br>
-Right arrow - move right<br>
-Down arrow - faster drop<br>
-Up arrow - spin<br>
-</p>
-
+<div id="sidebar">
+    <h2>Controls</h2>
+    <p>Move Left: <span id="leftKey">Left Arrow</span></p>
+    <p>Move Right: <span id="rightKey">Right Arrow</span></p>
+    <p>Drop: <span id="downKey">Down Arrow</span></p>
+    <p>Rotate Clockwise: <span id="rotateClockwiseKey">Up Arrow</span></p>
+    <p>Rotate Counterclockwise: <span id="rotateCounterClockwiseKey">Z</span></p>
+    <button onclick="remapControl('left')">Remap Left</button>
+    <button onclick="remapControl('right')">Remap Right</button>
+    <button onclick="remapControl('down')">Remap Down</button>
+    <button onclick="remapControl('rotateClockwise')">Remap Clockwise</button>
+    <button onclick="remapControl('rotateCounterClockwise')">Remap Counterclockwise</button>
+</div>
 
 <canvas width="320" height="640" id="game"></canvas>
 <script>
+// JavaScript code from the original provided code and the following new additions for remapping and saving controls
+// Initialize default controls and load saved controls from local storage
 
+let controls = {
+    left: 'ArrowLeft',
+    right: 'ArrowRight',
+    down: 'ArrowDown',
+    rotateClockwise: 'ArrowUp',
+    rotateCounterClockwise: 'KeyZ'
+};
+
+// Load controls from local storage if available
+const savedControls = JSON.parse(localStorage.getItem('tetrisControls'));
+if (savedControls) {
+    controls = savedControls;
+}
+
+// Display the current controls
+function displayControls() {
+    document.getElementById('leftKey').innerText = getKeyName(controls.left);
+    document.getElementById('rightKey').innerText = getKeyName(controls.right);
+    document.getElementById('downKey').innerText = getKeyName(controls.down);
+    document.getElementById('rotateClockwiseKey').innerText = getKeyName(controls.rotateClockwise);
+    document.getElementById('rotateCounterClockwiseKey').innerText = getKeyName(controls.rotateCounterClockwise);
+}
+
+// Get display-friendly key name
+function getKeyName(key) {
+    const keyNames = {
+        'ArrowLeft': 'Left Arrow',
+        'ArrowRight': 'Right Arrow',
+        'ArrowDown': 'Down Arrow',
+        'ArrowUp': 'Up Arrow',
+        'KeyZ': 'Z'
+    };
+    return keyNames[key] || key;
+}
+
+displayControls();
+
+let remapKey = null;
+
+// Handle remapping
+function remapControl(action) {
+    remapKey = action;
+    alert(`Press the new key for ${action} action`);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (remapKey) {
+        controls[remapKey] = e.key;
+        localStorage.setItem('tetrisControls', JSON.stringify(controls));
+        displayControls();
+        remapKey = null;
+    }
+});
+
+// Rest of the original JavaScript code
 // https://tetris.fandom.com/wiki/Tetris_Guideline
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -102,12 +182,22 @@ function getNextTetromino() {
   };
 }
 
-// rotate an NxN matrix 90deg
+// rotate an NxN matrix 90deg clockwise
 // @see https://codereview.stackexchange.com/a/186834
-function rotate(matrix) {
+function rotateClockwise(matrix) {
   const N = matrix.length - 1;
   const result = matrix.map((row, i) =>
     row.map((val, j) => matrix[N - j][i])
+  );
+
+  return result;
+}
+
+// rotate an NxN matrix 90deg counterclockwise
+function rotateCounterClockwise(matrix) {
+  const N = matrix.length - 1;
+  const result = matrix.map((row, i) =>
+    row.map((val, j) => matrix[j][N - i])
   );
 
   return result;
@@ -149,7 +239,7 @@ function placeTetromino() {
     }
   }
 
-  // check for line clears starting from the bottom and working our way up
+  // check for line clears starting from the bottom up
   for (let row = playfield.length - 1; row >= 0; ) {
     if (playfield[row].every(cell => !!cell)) {
 
@@ -311,35 +401,42 @@ document.addEventListener('keydown', function(e) {
   if (gameOver) return;
 
   // left and right arrow keys (move)
-  if (e.which === 37 || e.which === 39) {
-    const col = e.which === 37
-      ? tetromino.col - 1
-      : tetromino.col + 1;
-
+  if (e.key === controls.left) {
+    const col = tetromino.col - 1;
+    if (isValidMove(tetromino.matrix, tetromino.row, col)) {
+      tetromino.col = col;
+    }
+  } else if (e.key === controls.right) {
+    const col = tetromino.col + 1;
     if (isValidMove(tetromino.matrix, tetromino.row, col)) {
       tetromino.col = col;
     }
   }
 
-  // up arrow key (rotate)
-  if (e.which === 38) {
-    const matrix = rotate(tetromino.matrix);
+  // up arrow key (rotate clockwise)
+  if (e.key === controls.rotateClockwise) {
+    const matrix = rotateClockwise(tetromino.matrix);
+    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+      tetromino.matrix = matrix;
+    }
+  }
+
+  // z key (rotate counterclockwise)
+  if (e.key === controls.rotateCounterClockwise) {
+    const matrix = rotateCounterClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
       tetromino.matrix = matrix;
     }
   }
 
   // down arrow key (drop)
-  if(e.which === 40) {
+  if (e.key === controls.down) {
     const row = tetromino.row + 1;
-
     if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
       tetromino.row = row - 1;
-
       placeTetromino();
       return;
     }
-
     tetromino.row = row;
   }
 });
