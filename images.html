@@ -20,7 +20,7 @@
     <meta property="og:url" content="https://redvalis.github.io/images">
     <meta property="og:description" content="Image showcase!!">
     <meta name="expected-hostname" content="https://redvalis.github.io/images/">
-    <meta name="theme-color" content="#741616">
+    <meta name="theme-color" content="#8a2be2">    
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
         body {
@@ -113,8 +113,8 @@
     
         function populateCarousel() {
             const carouselInner = document.getElementById('carousel-inner');
-            const randomUrls = getRandomUrls(100);
-            randomUrls.forEach((url, index) => {
+            const orderedUrls = getOrderedUrls(100);
+            orderedUrls.forEach((url, index) => {
                 const item = document.createElement('div');
                 item.classList.add('carousel-item');
                 if (index === 0) {
@@ -142,13 +142,12 @@
             });
         }
     
-        function getRandomUrls(n) {
-            const randomUrls = [];
-            for (let i = 0; i < n; i++) {
-                const randomIndex = Math.floor(Math.random() * catUrls.length);
-                randomUrls.push(catUrls[randomIndex]);
+        function getOrderedUrls(n) {
+            const orderedUrls = [];
+            while (orderedUrls.length < n) {
+                orderedUrls.push(...catUrls);
             }
-            return randomUrls;
+            return orderedUrls.slice(0, n);
         }
     
         // Populate the carousel with images
