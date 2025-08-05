@@ -40,51 +40,170 @@ canvas {
     border: 1px solid white;
 }
 
-#sidebar {
+#score-display {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 15px;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+#score-display h3 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: #ffd700;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+#score-display .score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#score-display .score-value {
+    font-size: 20px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+#score-display .high-score-value {
+    color: #ffd700;
+    font-size: 22px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+#controls-sidebar {
     position: absolute;
     top: 20px;
     right: 20px;
     background: rgba(255, 255, 255, 0.1);
-    padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
+    min-width: 220px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
 }
 
-#sidebar h2 {
+#controls-header {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 12px 15px;
+    border-radius: 10px 10px 0 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+#controls-header:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#controls-header h2 {
     margin: 0;
     font-size: 18px;
+    font-weight: bold;
 }
 
-#sidebar p {
+#toggle-icon {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+#controls-content {
+    padding: 15px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+#controls-content.collapsed {
+    max-height: 0;
+    padding: 0 15px;
+}
+
+#controls-content p {
     font-size: 14px;
-    margin: 5px 0;
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#controls-content button {
+    font-size: 11px;
+    margin: 3px 2px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#controls-content button:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 </style>
 </head>
 <body>
-<div id="sidebar">
-    <h2>Controls</h2>
-    <p>Move Left: <span id="leftKey">A</span></p>
-    <p>Move Right: <span id="rightKey">D</span></p>
-    <p>Drop: <span id="downKey">S</span></p>
-    <p>Rotate Clockwise: <span id="rotateClockwiseKey">Right Arrow</span></p>
-    <p>Rotate Counterclockwise: <span id="rotateCounterClockwiseKey">Left Arrow</span></p>
-    <p>Rotate 180: <span id="rotate180Key">Up Arrow</span></p>
-    <button onclick="remapControl('left')">Remap Left</button>
-    <button onclick="remapControl('right')">Remap Right</button>
-    <button onclick="remapControl('down')">Remap Down</button>
-    <button onclick="remapControl('rotateClockwise')">Remap Clockwise</button>
-    <button onclick="remapControl('rotateCounterClockwise')">Remap Counterclockwise</button>
-    <button onclick="remapControl('rotate180')">Remap 180</button>
+<div id="score-display">
+    <h3>⚡ SCORE ⚡</h3>
+    <div class="score-item">
+        <span>Current:</span>
+        <span class="score-value" id="currentScore">0</span>
+    </div>
+    <div class="score-item">
+        <span>High Score:</span>
+        <span class="high-score-value" id="highScore">0</span>
+    </div>
+    <div class="score-item">
+        <span>Lines:</span>
+        <span class="score-value" id="linesCleared">0</span>
+    </div>
+</div>
+
+<div id="controls-sidebar">
+    <div id="controls-header" onclick="toggleControls()">
+        <h2>🎮 Controls</h2>
+        <span id="toggle-icon">▼</span>
+    </div>
+    
+    <div id="controls-content">
+        <p>Move Left: <span id="leftKey">A</span></p>
+        <p>Move Right: <span id="rightKey">D</span></p>
+        <p>Drop: <span id="downKey">S</span></p>
+        <p>Hard Drop: <span id="hardDropKey">Space</span></p>
+        <p>Rotate Clockwise: <span id="rotateClockwiseKey">Right Arrow</span></p>
+        <p>Rotate Counterclockwise: <span id="rotateCounterClockwiseKey">Left Arrow</span></p>
+        <p>Rotate 180: <span id="rotate180Key">Up Arrow</span></p>
+        <br>
+        <button onclick="remapControl('left')">Remap Left</button>
+        <button onclick="remapControl('right')">Remap Right</button>
+        <button onclick="remapControl('down')">Remap Down</button>
+        <button onclick="remapControl('hardDrop')">Remap Hard Drop</button>
+        <button onclick="remapControl('rotateClockwise')">Remap Clockwise</button>
+        <button onclick="remapControl('rotateCounterClockwise')">Remap Counterclockwise</button>
+        <button onclick="remapControl('rotate180')">Remap 180</button>
+    </div>
 </div>
 <canvas width="320" height="640" id="game"></canvas>
 <script>
-// JavaScript code from the original provided code and the following new additions for remapping and saving controls
 // Initialize default controls and load saved controls from local storage
-
 let controls = {
     left: 'a',
     right: 'd',
     down: 's',
+    hardDrop: ' ',
     rotateClockwise: 'ArrowRight',
     rotateCounterClockwise: 'ArrowLeft',
     rotate180: 'ArrowUp'
@@ -96,11 +215,42 @@ if (savedControls) {
     controls = savedControls;
 }
 
+// Score system variables
+let score = 0;
+let linesCleared = 0;
+let highScore = parseInt(getCookie('tetrisHighScore')) || 0;
+
+// Lock delay variables
+let lockDelay = 0;
+let lockDelayMax = 60; // 1 second at 60fps
+let pieceOnGround = false;
+
+// Toggle controls visibility
+let controlsCollapsed = false;
+
+function toggleControls() {
+    const content = document.getElementById('controls-content');
+    const icon = document.getElementById('toggle-icon');
+    
+    controlsCollapsed = !controlsCollapsed;
+    
+    if (controlsCollapsed) {
+        content.classList.add('collapsed');
+        icon.textContent = '▶';
+        icon.style.transform = 'rotate(-90deg)';
+    } else {
+        content.classList.remove('collapsed');
+        icon.textContent = '▼';
+        icon.style.transform = 'rotate(0deg)';
+    }
+}
+
 // Display the current controls
 function displayControls() {
     document.getElementById('leftKey').innerText = getKeyName(controls.left);
     document.getElementById('rightKey').innerText = getKeyName(controls.right);
     document.getElementById('downKey').innerText = getKeyName(controls.down);
+    document.getElementById('hardDropKey').innerText = getKeyName(controls.hardDrop);
     document.getElementById('rotateClockwiseKey').innerText = getKeyName(controls.rotateClockwise);
     document.getElementById('rotateCounterClockwiseKey').innerText = getKeyName(controls.rotateCounterClockwise);
     document.getElementById('rotate180Key').innerText = getKeyName(controls.rotate180);
@@ -112,6 +262,7 @@ function getKeyName(key) {
         'a': 'A',
         'd': 'D',
         's': 'S',
+        ' ': 'Space',
         'ArrowLeft': 'Left Arrow',
         'ArrowRight': 'Right Arrow',
         'ArrowDown': 'Down Arrow',
@@ -120,7 +271,53 @@ function getKeyName(key) {
     return keyNames[key] || key;
 }
 
+// Cookie functions
+function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+// Update score display
+function updateScoreDisplay() {
+    document.getElementById('currentScore').innerText = score;
+    document.getElementById('highScore').innerText = highScore;
+    document.getElementById('linesCleared').innerText = linesCleared;
+}
+
+// Calculate score based on lines cleared
+function calculateScore(linesClearedAtOnce) {
+    let points = 0;
+    switch(linesClearedAtOnce) {
+        case 1: // Single
+            points = 100;
+            break;
+        case 2: // Double
+            points = 300;
+            break;
+        case 3: // Triple
+            points = 500;
+            break;
+        case 4: // Tetris (Quad)
+            points = 800;
+            break;
+    }
+    return points;
+}
+
 displayControls();
+updateScoreDisplay();
 
 let remapKey = null;
 
@@ -136,6 +333,7 @@ document.addEventListener('keydown', function(e) {
         localStorage.setItem('tetrisControls', JSON.stringify(controls));
         displayControls();
         remapKey = null;
+        return;
     }
 });
 
@@ -251,8 +449,10 @@ function placeTetromino() {
   }
 
   // check for line clears starting from the bottom up
+  let linesClearedAtOnce = 0;
   for (let row = playfield.length - 1; row >= 0; ) {
     if (playfield[row].every(cell => !!cell)) {
+      linesClearedAtOnce++;
 
       // drop every row above this one
       for (let r = row; r >= 0; r--) {
@@ -266,6 +466,24 @@ function placeTetromino() {
     }
   }
 
+  // Update score and lines cleared
+  if (linesClearedAtOnce > 0) {
+    linesCleared += linesClearedAtOnce;
+    score += calculateScore(linesClearedAtOnce);
+    
+    // Update high score if current score is higher
+    if (score > highScore) {
+      highScore = score;
+      setCookie('tetrisHighScore', highScore, 365); // Save for 1 year
+    }
+    
+    updateScoreDisplay();
+  }
+
+  // Reset lock delay variables
+  lockDelay = 0;
+  pieceOnGround = false;
+  
   tetromino = getNextTetromino();
 }
 
@@ -380,16 +598,35 @@ function loop() {
 
   // draw the active tetromino
   if (tetromino) {
+    // Check if piece is on the ground
+    const wouldCollide = !isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col);
+    
+    if (wouldCollide && !pieceOnGround) {
+      pieceOnGround = true;
+      lockDelay = 0;
+    } else if (!wouldCollide) {
+      pieceOnGround = false;
+      lockDelay = 0;
+    }
 
-    // tetromino falls every 35 frames
-    if (++count > 35) {
-      tetromino.row++;
-      count = 0;
-
-      // place piece if it runs into anything
-      if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
-        tetromino.row--;
+    // Handle lock delay
+    if (pieceOnGround) {
+      lockDelay++;
+      if (lockDelay >= lockDelayMax) {
         placeTetromino();
+      }
+    } else {
+      // tetromino falls every 35 frames when not on ground
+      if (++count > 35) {
+        tetromino.row++;
+        count = 0;
+
+        // place piece if it runs into anything
+        if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
+          tetromino.row--;
+          pieceOnGround = true;
+          lockDelay = 0;
+        }
       }
     }
 
@@ -409,18 +646,22 @@ function loop() {
 
 // listen to keyboard events to move the active tetromino
 document.addEventListener('keydown', function(e) {
-  if (gameOver) return;
+  if (gameOver || remapKey) return;
 
   // left and right arrow keys (move)
   if (e.key === controls.left) {
     const col = tetromino.col - 1;
     if (isValidMove(tetromino.matrix, tetromino.row, col)) {
       tetromino.col = col;
+      // Reset lock delay when moving
+      if (pieceOnGround) lockDelay = 0;
     }
   } else if (e.key === controls.right) {
     const col = tetromino.col + 1;
     if (isValidMove(tetromino.matrix, tetromino.row, col)) {
       tetromino.col = col;
+      // Reset lock delay when moving
+      if (pieceOnGround) lockDelay = 0;
     }
   }
 
@@ -429,6 +670,8 @@ document.addEventListener('keydown', function(e) {
     const matrix = rotate180(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
       tetromino.matrix = matrix;
+      // Reset lock delay when rotating
+      if (pieceOnGround) lockDelay = 0;
     }
   }
 
@@ -437,6 +680,8 @@ document.addEventListener('keydown', function(e) {
     const matrix = rotateClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
       tetromino.matrix = matrix;
+      // Reset lock delay when rotating
+      if (pieceOnGround) lockDelay = 0;
     }
   }
 
@@ -445,6 +690,8 @@ document.addEventListener('keydown', function(e) {
     const matrix = rotateCounterClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
       tetromino.matrix = matrix;
+      // Reset lock delay when rotating
+      if (pieceOnGround) lockDelay = 0;
     }
   }
 
@@ -457,6 +704,16 @@ document.addEventListener('keydown', function(e) {
       return;
     }
     tetromino.row = row;
+  }
+
+  // hard drop (spacebar by default)
+  if (e.key === controls.hardDrop) {
+    // Drop the piece all the way down
+    while (isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col)) {
+      tetromino.row++;
+    }
+    // Immediately place the piece
+    placeTetromino();
   }
 });
 
