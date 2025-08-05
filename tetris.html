@@ -575,10 +575,10 @@ const colors = {
 
 let count = 0;
 let tetromino = getNextTetromino();
-let rAF = null;  // keep track of the animation frame so we can cancel it
+let rAF = null; 
 let gameOver = false;
 
-// game loop
+// create game loop, start it
 function loop() {
   rAF = requestAnimationFrame(loop);
   context.clearRect(0,0,canvas.width,canvas.height);
@@ -596,9 +596,8 @@ function loop() {
     }
   }
 
-  // draw the active tetromino
+  // draw active tetromino hope it works
   if (tetromino) {
-    // Check if piece is on the ground
     const wouldCollide = !isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col);
     
     if (wouldCollide && !pieceOnGround) {
@@ -609,19 +608,16 @@ function loop() {
       lockDelay = 0;
     }
 
-    // Handle lock delay
     if (pieceOnGround) {
       lockDelay++;
       if (lockDelay >= lockDelayMax) {
         placeTetromino();
       }
     } else {
-      // tetromino falls every 35 frames when not on ground
       if (++count > 35) {
         tetromino.row++;
         count = 0;
 
-        // place piece if it runs into anything
         if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
           tetromino.row--;
           pieceOnGround = true;
@@ -644,11 +640,9 @@ function loop() {
   }
 }
 
-// listen to keyboard events to move the active tetromino
 document.addEventListener('keydown', function(e) {
   if (gameOver || remapKey) return;
 
-  // left and right arrow keys (move)
   if (e.key === controls.left) {
     const col = tetromino.col - 1;
     if (isValidMove(tetromino.matrix, tetromino.row, col)) {
@@ -665,7 +659,6 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // up arrow key (rotate 180 degrees)
   if (e.key === controls.rotate180) {
     const matrix = rotate180(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
@@ -675,7 +668,6 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // right arrow key (rotate clockwise)
   if (e.key === controls.rotateClockwise) {
     const matrix = rotateClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
@@ -685,7 +677,6 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // left arrow key (rotate counterclockwise)
   if (e.key === controls.rotateCounterClockwise) {
     const matrix = rotateCounterClockwise(tetromino.matrix);
     if (isValidMove(matrix, tetromino.row, tetromino.col)) {
@@ -695,7 +686,6 @@ document.addEventListener('keydown', function(e) {
     }
   }
 
-  // down arrow key (drop)
   if (e.key === controls.down) {
     const row = tetromino.row + 1;
     if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
@@ -706,18 +696,14 @@ document.addEventListener('keydown', function(e) {
     tetromino.row = row;
   }
 
-  // hard drop (spacebar by default)
   if (e.key === controls.hardDrop) {
-    // Drop the piece all the way down
     while (isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col)) {
       tetromino.row++;
     }
-    // Immediately place the piece
     placeTetromino();
   }
 });
 
-// start the game
 rAF = requestAnimationFrame(loop);
 </script>
 </body>
